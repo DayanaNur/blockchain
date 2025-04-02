@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto News Aggregator</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Crypto News Aggregator</h1>
+        <p>Enter a cryptocurrency symbol (e.g., bitcoin, ethereum) to get the latest news!</p>
+    </header>
+
+    <section class="search-form">
+        <form id="searchForm" action="/news" method="get">
+            <label for="symbol">Cryptocurrency Symbol:</label>
+            <input type="text" id="symbol" name="symbol" placeholder="e.g., bitcoin" required>
+            <button type="submit">Get News</button>
+        </form>
+    </section>
+
+    <section id="newsContainer">
+        <!-- News results will appear here -->
+    </section>
+
+    <footer>
+        <p>Powered by Crypto News Aggregator</p>
+    </footer>
+</body>
+</html>
