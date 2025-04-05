@@ -14,7 +14,7 @@ This is a simple Rust-based web application that allows users to fetch the lates
 1. Clone this repository:
 ```bash
    git clone https://github.com/DayanaNur/blockchain.git
-
+```
 
 ## Demo Screenshots:
 
