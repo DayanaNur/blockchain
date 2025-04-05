@@ -24,64 +24,64 @@ struct CryptoInfo {
     last_updated: String,
 }
 
-// Генерация фиктивных новостей на основе рыночных данных
+// Generate mock news based on market data
 fn generate_news_articles(info: &CryptoInfo) -> Vec<(String, String, String)> {
     let mut articles = Vec::new();
     
-    // Статья о текущей цене и тренде
+    // Article about current price and trend
     let price_trend = if info.percent_change_24h > 0.0 {
-        format!("{} вырос на {:.2}% за последние 24 часа, достигнув ${:.2}", 
+        format!("{} increased by {:.2}% in the last 24 hours, reaching ${:.2}", 
             info.name, info.percent_change_24h, info.price)
     } else {
-        format!("{} упал на {:.2}% за последние 24 часа, опустившись до ${:.2}", 
+        format!("{} decreased by {:.2}% in the last 24 hours, falling to ${:.2}", 
             info.name, info.percent_change_24h.abs(), info.price)
     };
     
     articles.push((
-        format!("Анализ рынка: {}", price_trend),
+        format!("Market Analysis: {}", price_trend),
         "CoinMarketCap Analysis".to_string(),
-        format!("За последние 24 часа {} показал значительное изменение цены в условиях {} рынка. Аналитики отмечают, что текущий объем торгов составляет ${:.2} миллионов, что указывает на {} активность трейдеров. Рыночная капитализация составляет ${:.2} миллиардов.", 
+        format!("In the last 24 hours, {} has shown significant price movement in a {} market. Analysts note that the current trading volume is ${:.2} million, indicating {} trader activity. The market capitalization stands at ${:.2} billion.", 
             info.name, 
-            if info.percent_change_24h > 0.0 { "растущего" } else { "падающего" },
+            if info.percent_change_24h > 0.0 { "bullish" } else { "bearish" },
             info.volume_24h / 1_000_000.0,
-            if info.volume_24h > info.market_cap * 0.05 { "высокую" } else { "умеренную" },
+            if info.volume_24h > info.market_cap * 0.05 { "high" } else { "moderate" },
             info.market_cap / 1_000_000_000.0)
     ));
     
-    // Статья о 7-дневном тренде
+    // Article about 7-day trend
     let weekly_trend = if info.percent_change_7d > 0.0 {
-        format!("{} демонстрирует рост на {:.2}% за неделю", info.name, info.percent_change_7d)
+        format!("{} shows growth of {:.2}% over the week", info.name, info.percent_change_7d)
     } else {
-        format!("{} показывает снижение на {:.2}% за неделю", info.name, info.percent_change_7d.abs())
+        format!("{} shows decline of {:.2}% over the week", info.name, info.percent_change_7d.abs())
     };
     
     articles.push((
         weekly_trend,
         "Weekly Market Report".to_string(),
-        format!("Недельный обзор показывает, что {} {} тренд. Трейдеры отмечают {} волатильность и {} объемы торгов. Технические индикаторы указывают на возможное {} в ближайшие дни.",
+        format!("The weekly review indicates that {} {} trend. Traders report {} volatility and {} trading volumes. Technical indicators suggest possible {} in the coming days.",
             info.name,
-            if info.percent_change_7d > 0.0 { "продолжает восходящий" } else { "находится в нисходящем" },
-            if (info.percent_change_24h - info.percent_change_7d/7.0).abs() > 1.0 { "повышенную" } else { "стабильную" },
-            if info.volume_24h > info.market_cap * 0.1 { "значительные" } else { "средние" },
-            if info.percent_change_24h > info.percent_change_7d/7.0 { "продолжение роста" } else { "снижение давления продавцов" })
+            if info.percent_change_7d > 0.0 { "continues its upward" } else { "is in a downward" },
+            if (info.percent_change_24h - info.percent_change_7d/7.0).abs() > 1.0 { "increased" } else { "stable" },
+            if info.volume_24h > info.market_cap * 0.1 { "significant" } else { "average" },
+            if info.percent_change_24h > info.percent_change_7d/7.0 { "continued growth" } else { "reduction in selling pressure" })
     ));
     
-    // Статья о рыночной капитализации
+    // Article about market capitalization
     articles.push((
-        format!("{} занимает важное место в рейтинге криптовалют", info.name),
+        format!("{} holds an important position in cryptocurrency rankings", info.name),
         "Market Position Update".to_string(),
-        format!("С текущей рыночной капитализацией в ${:.2} миллиардов, {} остается значимым активом на криптовалютном рынке. Аналитики отмечают, что соотношение объема торгов к рыночной капитализации составляет {:.2}%, что говорит о {} ликвидности актива.",
+        format!("With a current market capitalization of ${:.2} billion, {} remains a significant asset in the cryptocurrency market. Analysts note that the ratio of trading volume to market capitalization is {:.2}%, indicating {} liquidity of the asset.",
             info.market_cap / 1_000_000_000.0,
             info.name,
             info.volume_24h / info.market_cap * 100.0,
-            if info.volume_24h / info.market_cap > 0.1 { "высокой" } else { "умеренной" })
+            if info.volume_24h / info.market_cap > 0.1 { "high" } else { "moderate" })
     ));
     
     articles
 }
 
 async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::Error> {
-    let api_key = "a4cf64a8-4b9d-4e93-86a7-e1fc8deec244"; // Ваш ключ API
+    let api_key = "a4cf64a8-4b9d-4e93-86a7-e1fc8deec244"; // Your API key
     let api_url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
     
     let client = Client::new();
@@ -94,7 +94,7 @@ async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::
     
     let body: Value = response.json().await?;
     
-    // Проверка на наличие ошибок в ответе API
+    // Check for errors in API response
     if let Some(error) = body.get("status").and_then(|s| s.get("error_message")) {
         if !error.is_null() {
             println!("API error: {}", error);
@@ -102,10 +102,10 @@ async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::
         }
     }
     
-    // Извлечение данных о криптовалюте
+    // Extract cryptocurrency data
     if let Some(data) = body.get("data") {
         if let Some(coin_data) = data.get(symbol) {
-            // Извлечение всей доступной информации о цене
+            // Extract all available price information
             let quote = coin_data.get("quote").and_then(|q| q.get("USD")).unwrap_or(&Value::Null);
             
             let info = CryptoInfo {
@@ -131,17 +131,17 @@ async fn get_news(query: web::Query<Query>) -> impl Responder {
     
     match fetch_crypto_data(&symbol).await {
         Ok(Some(crypto_info)) => {
-            // Генерация фиктивных новостных статей на основе данных
+            // Generate mock news articles based on data
             let news_articles = generate_news_articles(&crypto_info);
             
-            // Построение HTML-страницы с новостями
+            // Build HTML page with news
             let mut response_html = format!(
                 r#"<h2>Latest News for cryptocurrency: {}</h2>"#,
                 symbol
             );
             
             for (title, source, content) in news_articles {
-                // Генерация случайной даты публикации (последние 24 часа)
+                // Generate random publication date (last 24 hours)
                 let hours_ago = rand::random::<u8>() % 24;
                 let minutes_ago = rand::random::<u8>() % 60;
                 let published_at = format!("{} hours {} minutes ago", hours_ago, minutes_ago);
@@ -163,7 +163,7 @@ async fn get_news(query: web::Query<Query>) -> impl Responder {
                 ));
             }
             
-            // Добавление текущей цены и информации о рынке
+            // Add current price and market information
             let price_class = if crypto_info.percent_change_24h >= 0.0 { "price-up" } else { "price-down" };
             let price_arrow = if crypto_info.percent_change_24h >= 0.0 { "▲" } else { "▼" };
             
@@ -194,93 +194,6 @@ async fn get_news(query: web::Query<Query>) -> impl Responder {
             ));
             
             response_html.push_str("<p>Data sourced from <a href='https://coinmarketcap.com'>CoinMarketCap</a>.</p>");
-            
-            // Добавление стилей для новостного формата
-            response_html.push_str(
-                r#"
-                <style>
-                    .news-article {
-                        background-color: #fff;
-                        border-radius: 8px;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                        padding: 20px;
-                        margin-bottom: 20px;
-                    }
-                    
-                    .news-article h2 {
-                        margin-top: 0;
-                        font-size: 1.4rem;
-                    }
-                    
-                    .news-article a {
-                        color: #333;
-                        text-decoration: none;
-                    }
-                    
-                    .news-article a:hover {
-                        color: #4a89dc;
-                    }
-                    
-                    .news-content {
-                        margin-top: 15px;
-                        line-height: 1.6;
-                    }
-                    
-                    .read-more {
-                        display: inline-block;
-                        margin-top: 10px;
-                        color: #4a89dc !important;
-                        font-weight: 500;
-                    }
-                    
-                    .market-summary {
-                        background-color: #f8f9fa;
-                        border-radius: 8px;
-                        padding: 20px;
-                        margin: 30px 0;
-                    }
-                    
-                    .market-summary h3 {
-                        margin-top: 0;
-                        margin-bottom: 15px;
-                    }
-                    
-                    .market-data {
-                        display: flex;
-                        justify-content: space-between;
-                        flex-wrap: wrap;
-                    }
-                    
-                    .price-item, .data-item {
-                        display: flex;
-                        flex-direction: column;
-                        padding: 10px 15px;
-                        background-color: white;
-                        border-radius: 6px;
-                        min-width: 150px;
-                    }
-                    
-                    .price-up .value {
-                        color: #28a745;
-                    }
-                    
-                    .price-down .value {
-                        color: #dc3545;
-                    }
-                    
-                    .label {
-                        font-size: 0.9rem;
-                        color: #666;
-                        margin-bottom: 5px;
-                    }
-                    
-                    .value {
-                        font-size: 1.1rem;
-                        font-weight: 500;
-                    }
-                </style>
-                "#
-            );
             
             HttpResponse::Ok().content_type("text/html").body(response_html)
         },
