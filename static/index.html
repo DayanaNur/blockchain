@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto News Aggregator</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <header>
@@ -12,8 +12,8 @@
         <p>Enter a cryptocurrency symbol (e.g., bitcoin, ethereum) to get the latest news!</p>
     </header>
 
-    <section class="search-form">
-        <form id="searchForm" action="/news" method="get">
+    <section>
+        <form id="searchForm">
             <label for="symbol">Cryptocurrency Symbol:</label>
             <input type="text" id="symbol" name="symbol" placeholder="e.g., bitcoin" required>
             <button type="submit">Get News</button>
@@ -21,11 +21,33 @@
     </section>
 
     <section id="newsContainer">
-        <!-- News results will appear here -->
     </section>
 
     <footer>
         <p>Powered by Crypto News Aggregator</p>
     </footer>
+
+    <script>
+        const form = document.getElementById("searchForm");
+        const newsContainer = document.getElementById("newsContainer");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const symbol = document.getElementById("symbol").value.trim();
+
+            if (!symbol) return;
+
+            newsContainer.innerHTML = "<p>Loading...</p>";
+
+            try {
+                const response = await fetch(`/news?symbol=${encodeURIComponent(symbol)}`);
+                const html = await response.text();
+                newsContainer.innerHTML = html;
+            } catch (error) {
+                newsContainer.innerHTML = "<p>Error loading news. Please try again.</p>";
+                console.error(error);
+            }
+        });
+    </script>
 </body>
 </html>
