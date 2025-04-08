@@ -24,11 +24,9 @@ struct CryptoInfo {
     last_updated: String,
 }
 
-// Generate mock news based on market data
 fn generate_news_articles(info: &CryptoInfo) -> Vec<(String, String, String)> {
     let mut articles = Vec::new();
     
-    // Article about current price and trend
     let price_trend = if info.percent_change_24h > 0.0 {
         format!("{} increased by {:.2}% in the last 24 hours, reaching ${:.2}", 
             info.name, info.percent_change_24h, info.price)
@@ -48,7 +46,6 @@ fn generate_news_articles(info: &CryptoInfo) -> Vec<(String, String, String)> {
             info.market_cap / 1_000_000_000.0)
     ));
     
-    // Article about 7-day trend
     let weekly_trend = if info.percent_change_7d > 0.0 {
         format!("{} shows growth of {:.2}% over the week", info.name, info.percent_change_7d)
     } else {
@@ -66,7 +63,6 @@ fn generate_news_articles(info: &CryptoInfo) -> Vec<(String, String, String)> {
             if info.percent_change_24h > info.percent_change_7d/7.0 { "continued growth" } else { "reduction in selling pressure" })
     ));
     
-    // Article about market capitalization
     articles.push((
         format!("{} holds an important position in cryptocurrency rankings", info.name),
         "Market Position Update".to_string(),
@@ -81,7 +77,7 @@ fn generate_news_articles(info: &CryptoInfo) -> Vec<(String, String, String)> {
 }
 
 async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::Error> {
-    let api_key = "a4cf64a8-4b9d-4e93-86a7-e1fc8deec244"; // Your API key
+    let api_key = "a4cf64a8-4b9d-4e93-86a7-e1fc8deec244"; 
     let api_url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
     
     let client = Client::new();
@@ -94,7 +90,6 @@ async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::
     
     let body: Value = response.json().await?;
     
-    // Check for errors in API response
     if let Some(error) = body.get("status").and_then(|s| s.get("error_message")) {
         if !error.is_null() {
             println!("API error: {}", error);
@@ -102,10 +97,8 @@ async fn fetch_crypto_data(symbol: &str) -> Result<Option<CryptoInfo>, reqwest::
         }
     }
     
-    // Extract cryptocurrency data
     if let Some(data) = body.get("data") {
         if let Some(coin_data) = data.get(symbol) {
-            // Extract all available price information
             let quote = coin_data.get("quote").and_then(|q| q.get("USD")).unwrap_or(&Value::Null);
             
             let info = CryptoInfo {
@@ -131,17 +124,16 @@ async fn get_news(query: web::Query<Query>) -> impl Responder {
     
     match fetch_crypto_data(&symbol).await {
         Ok(Some(crypto_info)) => {
-            // Generate mock news articles based on data
             let news_articles = generate_news_articles(&crypto_info);
             
-            // Build HTML page with news
+            
             let mut response_html = format!(
                 r#"<h2>Latest News for cryptocurrency: {}</h2>"#,
                 symbol
             );
             
             for (title, source, content) in news_articles {
-                // Generate random publication date (last 24 hours)
+                
                 let hours_ago = rand::random::<u8>() % 24;
                 let minutes_ago = rand::random::<u8>() % 60;
                 let published_at = format!("{} hours {} minutes ago", hours_ago, minutes_ago);
@@ -163,7 +155,6 @@ async fn get_news(query: web::Query<Query>) -> impl Responder {
                 ));
             }
             
-            // Add current price and market information
             let price_class = if crypto_info.percent_change_24h >= 0.0 { "price-up" } else { "price-down" };
             let price_arrow = if crypto_info.percent_change_24h >= 0.0 { "▲" } else { "▼" };
             
